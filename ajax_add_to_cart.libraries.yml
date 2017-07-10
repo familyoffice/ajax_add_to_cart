@@ -1,0 +1,5 @@
+ajax_add_to_cart.commands:
+  version: 1
+  js:
+  dependencies:
+     - core/drupal.ajax

@@ -1,0 +1,118 @@
+<?php
+
+/**
+ * @file
+ * Contains ajax_add_to_cart.module.
+ */
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Ajax\OpenModalDialogCommand;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
+
+/**
+ * Implements hook_help().
+ */
+function ajax_add_to_cart_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the ajax_add_to_cart module.
+    case 'help.page.ajax_add_to_cart':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Add ajax add to cart functionality.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Define changes for standard forms.
+ */
+function ajax_add_to_cart_form_alter(&$form, &$form_state, $form_id) {
+  // Check for add to cart for id.
+  if (strstr($form_id, 'commerce_order_item_default_add_to_cart_')) {
+    ajax_add_to_cart_ajax_form($form_id, $form);
+  }
+}
+
+/**
+ * Add field to the form.
+ */
+function ajax_add_to_cart_ajax_form($form_id, &$form) {
+  $messages = [
+    $form_id => t('Adding to cart ...'),
+  ];
+  $form['#prefix'] = '<div id="modal_ajax_form_' . $form_id . '">';
+  $form['#suffix'] = '</div>';
+  $_SESSION['messages'] = [];
+  $form['status_messages_' . $form_id] = [
+    '#type' => 'status_messages',
+    '#weight' => -10,
+  ];
+  $form['form_id'] = [
+    '#type' => 'hidden',
+    '#value' => $form_id,
+  ];
+  // // Add ajax callback to the form.
+  $form['actions']['submit']['#ajax'] = [
+    'callback' => 'ajax_add_to_cart_ajax_validate',
+    'event' => 'click',
+    '#attributes' => [
+      'class' => [
+        'use-ajax',
+      ],
+    ],
+    'progress' => [
+      'type' => 'throbber',
+      'message' => $messages[$form_id],
+    ],
+  ];
+  // Add ajax dialoge library to open the form in popup.
+  // Adding own library to add extra functionality.
+  $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
+  return $form;
+}
+
+/**
+ * Define a validation for forms.
+ */
+function ajax_add_to_cart_ajax_validate(&$form, $form_state) {
+  $response = new AjaxResponse();
+  $form_id = $form_state->getUserInput()['form_id'];
+  if ($form_state->hasAnyErrors()) {
+    // If form is having errors, rebuild form.
+    $response->addCommand(new ReplaceCommand('#modal_ajax_form_' . $form_id, $form));
+  }
+  else {
+    // If validated successfully submit form.
+    ajax_add_to_cart_ajax_response($form_id, $response);
+  }
+  return $response;
+}
+
+/**
+ * Define responses.
+ */
+function ajax_add_to_cart_ajax_response($form_id, $response) {
+  // Adding modal window.
+  $options = [
+    'width' => 300,
+    'height' => 150,
+  ];
+  $cart = URL::fromRoute('commerce_cart.page');
+  $cartLink = Link::createFromRoute(t('Your Cart'), 'commerce_cart.page')->toString();
+  $settings = [
+    $form_id => [
+      'type' => 'login',
+      'title' => t('Successful Added'),
+      'message' => t('Product added to cart. View @cart', ['@cart' => $cartLink]),
+    ],
+  ];
+  $title = $settings[$form_id]['title'];
+  $message = $settings[$form_id]['message'];
+  $response->addCommand(new OpenModalDialogCommand($title, $message, $options));
+
+  return $response;
+}
