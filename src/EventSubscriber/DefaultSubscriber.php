@@ -29,7 +29,7 @@ class DefaultSubscriber implements EventSubscriberInterface {
   /**
    * This method is called whenever the kernel request event is dispatched.
    *
-   * @param GetResponseEvent $event
+   * @param Symfony\Component\HttpKernel\Event\GetResponseEvent $event
    *   Event {@inheritdoc}.
    */
   public function unsetDrupalMessage(GetResponseEvent $event) {
