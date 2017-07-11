@@ -10,6 +10,8 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Ajax\OpenModalDialogCommand;
 use Drupal\Core\Link;
+use Drupal\block\Entity\Block;
+use Drupal\ajax_login\Ajax\ReloadCommand;
 
 /**
  * Implements hook_help().
@@ -71,6 +73,7 @@ function ajax_add_to_cart_ajax_form($form_id, &$form) {
   ];
   // Add ajax dialoge library to open the form in popup.
   // Adding own library to add extra functionality.
+  $form['#attached']['library'][] = 'ajax_add_to_cart/ajax_add_to_cart.commands';
   $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
   return $form;
 }
@@ -99,7 +102,7 @@ function ajax_add_to_cart_ajax_response($form_id, $response) {
   // Adding modal window.
   $options = [
     'width' => 300,
-    'height' => 150,
+    'height' => 350,
   ];
   $cartLink = Link::createFromRoute(t('Your Cart'), 'commerce_cart.page')->toString();
   $settings = [
@@ -111,7 +114,11 @@ function ajax_add_to_cart_ajax_response($form_id, $response) {
   ];
   $title = $settings[$form_id]['title'];
   $message = $settings[$form_id]['message'];
-  $response->addCommand(new OpenModalDialogCommand($title, $message, $options));
-
+  $block = Block::load('cart');
+  $render = \Drupal::entityTypeManager()
+    ->getViewBuilder('block')
+    ->view($block);
+  $response->addCommand(new OpenModalDialogCommand($title, $render, $options));
+  $response->addCommand(new ReloadCommand());
   return $response;
 }
