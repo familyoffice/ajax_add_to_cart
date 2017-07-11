@@ -3,8 +3,7 @@
 namespace Drupal\ajax_add_to_cart\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
-/* use Symfony\Component\EventDispatcher\Event; */
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 /**
  * Class DefaultSubscriber.

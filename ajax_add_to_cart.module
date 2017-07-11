@@ -102,7 +102,6 @@ function ajax_add_to_cart_ajax_response($form_id, $response) {
     'width' => 300,
     'height' => 150,
   ];
-  $cart = URL::fromRoute('commerce_cart.page');
   $cartLink = Link::createFromRoute(t('Your Cart'), 'commerce_cart.page')->toString();
   $settings = [
     $form_id => [
