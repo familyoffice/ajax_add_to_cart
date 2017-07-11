@@ -3,13 +3,13 @@
 namespace Drupal\ajax_add_to_cart\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\EventDispatcher\Event;
+
+/* use Symfony\Component\EventDispatcher\Event; */
 
 /**
  * Class DefaultSubscriber.
  */
 class DefaultSubscriber implements EventSubscriberInterface {
-
 
   /**
    * Constructs a new DefaultSubscriber object.
@@ -21,19 +21,19 @@ class DefaultSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  static function getSubscribedEvents() {
+  public static function getSubscribedEvents() {
     $events['kernel.request'] = ['unsetDrupalMessage'];
 
     return $events;
   }
 
   /**
-   * This method is called whenever the kernel.request event is
-   * dispatched.
+   * This method is called whenever the kernel request event is dispatched.
    *
    * @param GetResponseEvent $event
+   *   Event {@inheritdoc}.
    */
-  public function unsetDrupalMessage(Event $event) {
+  public function unsetDrupalMessage(GetResponseEvent $event) {
     unset($_SESSION['messages']);
   }
 

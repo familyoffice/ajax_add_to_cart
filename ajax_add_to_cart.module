@@ -4,6 +4,7 @@
  * @file
  * Contains ajax_add_to_cart.module.
  */
+
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
