@@ -3,8 +3,6 @@
 namespace Drupal\ajax_add_to_cart\Helper;
 
 use Drupal\Core\Ajax\OpenModalDialogCommand;
-use Drupal\Core\Link;
-use Drupal\block\Entity\Block;
 use Drupal\ajax_add_to_cart\Ajax\ReloadCommand;
 
 /**
@@ -50,9 +48,17 @@ class AjaxCartHelper {
   }
 
   /**
-   * Add field to the form.
+   * Ajax add to cart Form.
+   *
+   * @param string $form_id
+   *   Form id.
+   * @param array $form
+   *   Form array.
+   *
+   * @return string
+   *   Return Form array.
    */
-  public function ajaxAddtocartajaxform($form_id, &$form, $object = NULL) {
+  public function ajaxAddToCartAjaxForm($form_id, &$form) {
     $messages = [
       $form_id => t('Adding to cart ...'),
     ];
@@ -89,9 +95,17 @@ class AjaxCartHelper {
   }
 
   /**
-   * Define responses.
+   * Ajax add to cart response.
+   *
+   * @param string $form_id
+   *   Form id.
+   * @param object $response
+   *   Response object to store information.
+   *
+   * @return object $response
+   *   Return response object.
    */
-  public function ajaxAddtocartajaxresponse($form_id, $response) {
+  public function ajaxAddToCartAjaxResponse($form_id, $response) {
     // Adding modal window.
     $options = [
       'width' => 300,
@@ -110,13 +124,17 @@ class AjaxCartHelper {
   }
 
   /**
-   * Get Meta Storage.
+   * Get cart block.
+   *
+   * @param object $container
+   *   Container object.
+   *
+   * @return object $render
+   *   Return render object.
    */
   private function getCartBlock($container = NULL) {
-    $block = Block::load('cart');
-    $render = $container->get('entity.manager')
-      ->getViewBuilder('block')
-      ->view($block);
+    $customblock = $container->get('plugin.manager.block')->createInstance('commerce_cart', []);
+    $render = $customblock->build();
     return $render;
   }
 
