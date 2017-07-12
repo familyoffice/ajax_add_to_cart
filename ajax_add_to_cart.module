@@ -34,7 +34,7 @@ function ajax_add_to_cart_form_alter(&$form, &$form_state, $form_id) {
   if (strstr($form_id, 'commerce_order_item_default_add_to_cart_')) {
     // Using getInstanace method to create Object.
     $object = AjaxCartHelper::getInstance();
-    $object->ajaxAddtocartajaxform($form_id, $form);
+    $object->ajaxAddToCartAjaxForm($form_id, $form);
   }
 }
 
@@ -52,7 +52,7 @@ function ajax_add_to_cart_ajax_validate(&$form, $form_state) {
     // Using getInstanace method to create Object.
     $object = AjaxCartHelper::getInstance();
     // If validated successfully submit form.
-    $object->ajaxAddtocartajaxresponse($form_id, $response);
+    $object->ajaxAddToCartAjaxResponse($form_id, $response);
   }
   return $response;
 }
