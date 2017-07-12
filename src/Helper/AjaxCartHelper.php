@@ -97,16 +97,12 @@ class AjaxCartHelper {
       'width' => 300,
       'height' => 350,
     ];
-    $cartLink = Link::createFromRoute(t('Your Cart'), 'commerce_cart.page')->toString();
     $settings = [
       $form_id => [
-        'type' => 'login',
         'title' => t('Successful Added'),
-        'message' => t('Product added to cart. View @cart', ['@cart' => $cartLink]),
       ],
     ];
     $title = $settings[$form_id]['title'];
-    $message = $settings[$form_id]['message'];
     $response->addCommand(new OpenModalDialogCommand($title, $this->cartBlock, $options));
     $response->addCommand(new ReloadCommand());
     unset($_SESSION['messages']);
@@ -119,8 +115,8 @@ class AjaxCartHelper {
   private function getCartBlock($container = NULL) {
     $block = Block::load('cart');
     $render = $container->get('entity.manager')
-        ->getViewBuilder('block')
-        ->view($block);
+      ->getViewBuilder('block')
+      ->view($block);
     return $render;
   }
 
