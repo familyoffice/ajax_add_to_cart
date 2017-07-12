@@ -1,4 +1,11 @@
 name: ajax_add_to_cart
 type: module
 description: Add ajax add to cart functionality.
+dependencies:
+  - address
+  - entity:entity
+  - datetime
+  - inline_entity_form
+  - views
+  - system (>=8.3.0)
 core: 8.x
