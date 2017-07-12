@@ -1,11 +1,16 @@
-name: ajax_add_to_cart
+name: Ajax add to cart
 type: module
-description: Add ajax add to cart functionality.
+description: 'Add ajax add to cart functionality.'
+package: Commerce
 dependencies:
-  - address
-  - entity:entity
-  - datetime
-  - inline_entity_form
-  - views
-  - system (>=8.3.0)
+  - commerce
+  - commerce_cart
+  - commerce_checkout
+  - commerce_order
+  - commerce_payment
+  - commerce_price
+  - commerce_product
+  - commerce_store
 core: 8.x
+project: 'ajax_add_to_cart'
+datestamp: 1494330492
