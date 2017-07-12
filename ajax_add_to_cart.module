@@ -6,12 +6,9 @@
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\ajax_add_to_cart\Helper\AjaxCartHelper;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
-use Drupal\Core\Ajax\OpenModalDialogCommand;
-use Drupal\Core\Link;
-use Drupal\block\Entity\Block;
-use Drupal\ajax_login\Ajax\ReloadCommand;
 
 /**
  * Implements hook_help().
@@ -35,47 +32,10 @@ function ajax_add_to_cart_help($route_name, RouteMatchInterface $route_match) {
 function ajax_add_to_cart_form_alter(&$form, &$form_state, $form_id) {
   // Check for add to cart for id.
   if (strstr($form_id, 'commerce_order_item_default_add_to_cart_')) {
-    ajax_add_to_cart_ajax_form($form_id, $form);
+    // Using getInstanace method to create Object.
+    $object = AjaxCartHelper::getInstance();
+    $object->ajaxAddtocartajaxform($form_id, $form);
   }
-}
-
-/**
- * Add field to the form.
- */
-function ajax_add_to_cart_ajax_form($form_id, &$form) {
-  $messages = [
-    $form_id => t('Adding to cart ...'),
-  ];
-  $form['#prefix'] = '<div id="modal_ajax_form_' . $form_id . '">';
-  $form['#suffix'] = '</div>';
-  $_SESSION['messages'] = [];
-  $form['status_messages_' . $form_id] = [
-    '#type' => 'status_messages',
-    '#weight' => -10,
-  ];
-  $form['form_id'] = [
-    '#type' => 'hidden',
-    '#value' => $form_id,
-  ];
-  // // Add ajax callback to the form.
-  $form['actions']['submit']['#ajax'] = [
-    'callback' => 'ajax_add_to_cart_ajax_validate',
-    'event' => 'click',
-    '#attributes' => [
-      'class' => [
-        'use-ajax',
-      ],
-    ],
-    'progress' => [
-      'type' => 'throbber',
-      'message' => $messages[$form_id],
-    ],
-  ];
-  // Add ajax dialoge library to open the form in popup.
-  // Adding own library to add extra functionality.
-  $form['#attached']['library'][] = 'ajax_add_to_cart/ajax_add_to_cart.commands';
-  $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
-  return $form;
 }
 
 /**
@@ -89,36 +49,10 @@ function ajax_add_to_cart_ajax_validate(&$form, $form_state) {
     $response->addCommand(new ReplaceCommand('#modal_ajax_form_' . $form_id, $form));
   }
   else {
+    // Using getInstanace method to create Object.
+    $object = AjaxCartHelper::getInstance();
     // If validated successfully submit form.
-    ajax_add_to_cart_ajax_response($form_id, $response);
+    $object->ajaxAddtocartajaxresponse($form_id, $response);
   }
-  return $response;
-}
-
-/**
- * Define responses.
- */
-function ajax_add_to_cart_ajax_response($form_id, $response) {
-  // Adding modal window.
-  $options = [
-    'width' => 300,
-    'height' => 350,
-  ];
-  $cartLink = Link::createFromRoute(t('Your Cart'), 'commerce_cart.page')->toString();
-  $settings = [
-    $form_id => [
-      'type' => 'login',
-      'title' => t('Successful Added'),
-      'message' => t('Product added to cart. View @cart', ['@cart' => $cartLink]),
-    ],
-  ];
-  $title = $settings[$form_id]['title'];
-  $message = $settings[$form_id]['message'];
-  $block = Block::load('cart');
-  $render = \Drupal::entityTypeManager()
-    ->getViewBuilder('block')
-    ->view($block);
-  $response->addCommand(new OpenModalDialogCommand($title, $render, $options));
-  $response->addCommand(new ReloadCommand());
   return $response;
 }
