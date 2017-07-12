@@ -4,6 +4,8 @@ namespace Drupal\ajax_add_to_cart\Helper;
 
 use Drupal\Core\Ajax\OpenModalDialogCommand;
 use Drupal\ajax_add_to_cart\Ajax\ReloadCommand;
+use Drupal\block\Entity\Block;
+use Drupal\Core\Ajax\ReplaceCommand;
 
 /**
  * Class AjaxCartHelper.
@@ -27,11 +29,18 @@ class AjaxCartHelper {
   protected $cartBlock;
 
   /**
+   * Protected container variable.
+   *
+   * @var container
+   */
+  protected $container;
+
+  /**
    * Private constructor to avoid instantiation.
    */
   private function __construct() {
-    $container = \Drupal::getContainer();
-    $this->cartBlock = $this->getCartBlock($container);
+    $this->container = \Drupal::getContainer();
+    $this->cartBlock = $this->getCartBlock($this->container);
   }
 
   /**
@@ -108,16 +117,26 @@ class AjaxCartHelper {
   public function ajaxAddToCartAjaxResponse($form_id, $response) {
     // Adding modal window.
     $options = [
-      'width' => 300,
-      'height' => 350,
+      'width' => 250,
+      'height' => 300,
     ];
     $settings = [
       $form_id => [
         'title' => t('Successful Added'),
+        'message' => t('Cart Updated Successfully'),
       ],
     ];
     $title = $settings[$form_id]['title'];
-    $response->addCommand(new OpenModalDialogCommand($title, $this->cartBlock, $options));
+    $message = $_SESSION['messages']['status'][0]->__toString();
+    if (!empty($this->cartBlock)) {
+      $response->addCommand(new OpenModalDialogCommand($title, $message, $options));
+    }
+    else {
+      $customblock = $this->container->get('plugin.manager.block')->createInstance('commerce_cart', []);
+      $render = $customblock->build();
+      $response->addCommand(new OpenModalDialogCommand($title, $render, $options));
+    }
+    $response->addCommand(new ReplaceCommand('.block-commerce-cart', $this->cartBlock));
     $response->addCommand(new ReloadCommand());
     unset($_SESSION['messages']);
     return $response;
@@ -133,9 +152,13 @@ class AjaxCartHelper {
    *   Return render object.
    */
   private function getCartBlock($container = NULL) {
-    $customblock = $container->get('plugin.manager.block')->createInstance('commerce_cart', []);
-    $render = $customblock->build();
-    return $render;
+    $block = Block::load('cart');
+    if ($block) {
+      $render = $container->get('entity.manager')
+          ->getViewBuilder('block')
+          ->view($block);
+    }
+    return isset($render) ? $render : NULL;
   }
 
 }
