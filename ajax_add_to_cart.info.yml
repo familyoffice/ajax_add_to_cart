@@ -12,5 +12,4 @@ dependencies:
   - commerce_product
   - commerce_store
 core: 8.x
-project: 'ajax_add_to_cart'
 datestamp: 1494330492
