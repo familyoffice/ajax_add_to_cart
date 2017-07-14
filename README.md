@@ -9,4 +9,5 @@ if cart block is placed in any region.
 
 Features:
 Pop-up message will appear instantly if cart block is placed in any region.
-Pop-up message & cart items will appear instantly if cart block is not placed in any region.
+Pop-up message & cart items will appear instantly if cart block is 
+not placed in any region.

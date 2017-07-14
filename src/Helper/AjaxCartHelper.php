@@ -111,7 +111,7 @@ class AjaxCartHelper {
    * @param object $response
    *   Response object to store information.
    *
-   * @return object $response
+   * @return object
    *   Return response object.
    */
   public function ajaxAddToCartAjaxResponse($form_id, $response) {
@@ -148,15 +148,15 @@ class AjaxCartHelper {
    * @param object $container
    *   Container object.
    *
-   * @return object $render
+   * @return object
    *   Return render object.
    */
   private function getCartBlock($container = NULL) {
     $block = Block::load('cart');
     if ($block) {
       $render = $container->get('entity.manager')
-          ->getViewBuilder('block')
-          ->view($block);
+        ->getViewBuilder('block')
+        ->view($block);
     }
     return isset($render) ? $render : NULL;
   }
