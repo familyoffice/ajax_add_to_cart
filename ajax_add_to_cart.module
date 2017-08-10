@@ -31,7 +31,7 @@ function ajax_add_to_cart_help($route_name, RouteMatchInterface $route_match) {
  * Define changes for standard forms.
  */
 function ajax_add_to_cart_form_alter(&$form, &$form_state, $form_id) {
-  // Check if the form builder implements the AddToCartFormInterface
+  // Check if the form builder implements the AddToCartFormInterface.
   if ($form_state->getBuildInfo()['callback_object'] instanceof AddToCartFormInterface) {
     // Using getInstanace method to create Object.
     $object = AjaxCartHelper::getInstance();
@@ -63,7 +63,7 @@ function ajax_add_to_cart_ajax_validate(&$form, $form_state) {
  */
 function ajax_add_to_cart_preprocess_block(&$vars) {
   if ($vars['base_plugin_id'] == 'commerce_cart') {
-    // Add a class to the cart block so that we can replace it using Ajax
+    // Add a class to the cart block so that we can replace it using Ajax.
     $vars['attributes']['class'][] = 'block-commerce-cart';
   }
 }
