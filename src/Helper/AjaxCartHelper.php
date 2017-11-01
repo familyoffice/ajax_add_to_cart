@@ -152,13 +152,42 @@ class AjaxCartHelper {
    *   Return render object.
    */
   private function getCartBlock($container = NULL) {
-    $block = Block::load('cart');
-    if ($block) {
+    $blockId = $this->getCartBlockId();
+    if($blockId != FALSE) {
+      $block = Block::load($blockId);
       $render = $container->get('entity.manager')
         ->getViewBuilder('block')
         ->view($block);
     }
     return isset($render) ? $render : NULL;
+  }
+
+  /**
+   * Gets the machine name (id) of a commerce cart block
+   * visible on the current page. Returns only the first cart found
+   *
+   * @param none
+   *
+   * @return mixed or FALSE
+   *   Return id of the first commerce cart block found on current page.
+   * 	Returns FALSE if no commerce cart block is visible.
+   */
+  private function getCartBlockId() {
+    $blockRepo = \Drupal::service('block.repository');
+    //Returns an array of regions each with an array of blocks
+    $regions = $blockRepo->getVisibleBlocksPerRegion();
+    //Iterate all visible blocks and regions
+    foreach($regions as $region) {
+      foreach($region as $block) {
+        $idPlugin = $block->get('plugin');
+        //check if this is a commerce cart block
+        if($idPlugin == 'commerce_cart') {
+          $cartBlockId = $block->get('id');
+          return($cartBlockId);
+        }
+      }
+    }
+    return FALSE;
   }
 
 }
