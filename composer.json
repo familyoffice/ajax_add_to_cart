@@ -10,5 +10,7 @@
     "issues": "https://www.drupal.org/project/issues/ajax_add_to_cart",
     "source": "http://cgit.drupalcode.org/ajax_add_to_cart"
   },
-  "require": { }
+  "require": {
+    "drupal/commerce": "~2.0"
+  }
 }
