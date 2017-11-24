@@ -129,7 +129,7 @@ class AjaxCartHelper {
       'width' => $this->configFactory->get('ajax_add_to_cart.ajaxconfig')->get('ajax_modal_width'),
       'height' => $this->configFactory->get('ajax_add_to_cart.ajaxconfig')->get('ajax_modal_height'),
     ];
-    $title = 'Successfully Added';
+    $title = t('Successfully Added');
     $message = $_SESSION['messages']['status'][0]->__toString();
     if (!empty($this->cartBlock)) {
       $response->addCommand(new OpenModalDialogCommand($title, $message, $options));
