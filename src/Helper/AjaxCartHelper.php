@@ -36,11 +36,19 @@ class AjaxCartHelper {
   protected $container;
 
   /**
+   * Protected configFactory variable.
+   *
+   * @var configFactory
+   */
+  protected $configFactory;
+
+  /**
    * Private constructor to avoid instantiation.
    */
   private function __construct() {
     $this->container = \Drupal::getContainer();
     $this->cartBlock = $this->getCartBlock($this->container);
+    $this->configFactory = $this->container->get('config.factory');
   }
 
   /**
@@ -100,6 +108,7 @@ class AjaxCartHelper {
     // Adding own library to add extra functionality.
     $form['#attached']['library'][] = 'ajax_add_to_cart/ajax_add_to_cart.commands';
     $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
+    $form['#attached']['drupalSettings']['ajax_add_to_cart']['ajax_add_to_cart']['time'] = $this->configFactory->get('ajax_add_to_cart.ajaxconfig')->get('time_ajax_modal');
     return $form;
   }
 
@@ -117,16 +126,10 @@ class AjaxCartHelper {
   public function ajaxAddToCartAjaxResponse($form_id, $response) {
     // Adding modal window.
     $options = [
-      'width' => 250,
-      'height' => 300,
+      'width' => $this->configFactory->get('ajax_add_to_cart.ajaxconfig')->get('ajax_modal_width'),
+      'height' => $this->configFactory->get('ajax_add_to_cart.ajaxconfig')->get('ajax_modal_height'),
     ];
-    $settings = [
-      $form_id => [
-        'title' => t('Successful Added'),
-        'message' => t('Cart Updated Successfully'),
-      ],
-    ];
-    $title = $settings[$form_id]['title'];
+    $title = 'Successfully Added';
     $message = $_SESSION['messages']['status'][0]->__toString();
     if (!empty($this->cartBlock)) {
       $response->addCommand(new OpenModalDialogCommand($title, $message, $options));
