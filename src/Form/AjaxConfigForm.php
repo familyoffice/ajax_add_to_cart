@@ -33,8 +33,7 @@ class AjaxConfigForm extends ConfigFormBase {
    * Constructs a new AjaxConfigForm object.
    */
   public function __construct(
-    ConfigFactoryInterface $config_factory,
-      ConfigFactory $config_factory,
+    ConfigFactory $config_factory,
     PathValidator $path_validator
     ) {
     parent::__construct($config_factory);
@@ -48,7 +47,6 @@ class AjaxConfigForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-            $container->get('config.factory'),
       $container->get('path.validator')
     );
   }
