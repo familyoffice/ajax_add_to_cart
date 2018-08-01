@@ -94,6 +94,7 @@ class AjaxCartHelper {
     $form['actions']['submit']['#attributes']['class'][] = 'use-ajax';
     $form['actions']['submit']['#ajax'] = [
       'callback' => 'ajax_add_to_cart_ajax_validate',
+      'disable-refocus' => TRUE,
       'event' => 'click',
       'progress' => [
         'type' => 'throbber',
