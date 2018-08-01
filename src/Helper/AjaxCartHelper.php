@@ -81,7 +81,6 @@ class AjaxCartHelper {
     ];
     $form['#prefix'] = '<div id="modal_ajax_form_' . $form_id . '">';
     $form['#suffix'] = '</div>';
-    $_SESSION['messages'] = [];
     $form['status_messages_' . $form_id] = [
       '#type' => 'status_messages',
       '#weight' => -10,
@@ -127,7 +126,9 @@ class AjaxCartHelper {
       'height' => $this->configFactory->get('ajax_add_to_cart.ajaxconfig')->get('ajax_modal_height'),
     ];
     $title = t('Successfully Added');
-    $message = $_SESSION['messages']['status'][0]->__toString();
+    if ($_SESSION['_symfony_flashes']) {
+      $message = $_SESSION['_symfony_flashes']['status'][0]->__toString();
+    }
     if (!empty($this->cartBlock)) {
       $response->addCommand(new OpenModalDialogCommand($title, $message, $options));
     }
@@ -138,7 +139,7 @@ class AjaxCartHelper {
     }
     $response->addCommand(new ReplaceCommand('.block-commerce-cart', $this->cartBlock));
     $response->addCommand(new ReloadCommand());
-    unset($_SESSION['messages']);
+    unset($_SESSION['_symfony_flashes']);
     return $response;
   }
 
