@@ -2,9 +2,10 @@
 
 namespace Drupal\ajax_add_to_cart\Helper;
 
-use Drupal\Core\Ajax\OpenModalDialogCommand;
+use Drupal;
 use Drupal\ajax_add_to_cart\Ajax\ReloadCommand;
 use Drupal\block\Entity\Block;
+use Drupal\Core\Ajax\OpenModalDialogCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
 
 /**
@@ -46,9 +47,57 @@ class AjaxCartHelper {
    * Private constructor to avoid instantiation.
    */
   private function __construct() {
-    $this->container = \Drupal::getContainer();
+    $this->container = Drupal::getContainer();
     $this->cartBlock = $this->getCartBlock($this->container);
     $this->configFactory = $this->container->get('config.factory');
+  }
+
+  /**
+   * Get cart block.
+   *
+   * @param object $container
+   *   Container object.
+   *
+   * @return object
+   *   Return render object.
+   */
+  private function getCartBlock($container = NULL) {
+    $blockId = $this->getCartBlockId();
+    if ($blockId != FALSE) {
+      $block = Block::load($blockId);
+      $render = $container->get('entity.manager')
+        ->getViewBuilder('block')
+        ->view($block);
+    }
+    return isset($render) ? $render : NULL;
+  }
+
+  /**
+   * Gets the machine name (id) of a commerce cart block
+   * visible on the current page. Returns only the first cart found
+   *
+   * @param none
+   *
+   * @return mixed or FALSE
+   *   Return id of the first commerce cart block found on current page.
+   *  Returns FALSE if no commerce cart block is visible.
+   */
+  private function getCartBlockId() {
+    $blockRepo = Drupal::service('block.repository');
+    //Returns an array of regions each with an array of blocks
+    $regions = $blockRepo->getVisibleBlocksPerRegion();
+    //Iterate all visible blocks and regions
+    foreach ($regions as $region) {
+      foreach ($region as $block) {
+        $idPlugin = $block->get('plugin');
+        //check if this is a commerce cart block
+        if ($idPlugin == 'commerce_cart') {
+          $cartBlockId = $block->get('id');
+          return ($cartBlockId);
+        }
+      }
+    }
+    return FALSE;
   }
 
   /**
@@ -104,7 +153,8 @@ class AjaxCartHelper {
     // Adding own library to add extra functionality.
     $form['#attached']['library'][] = 'ajax_add_to_cart/ajax_add_to_cart.commands';
     $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
-    $form['#attached']['drupalSettings']['ajax_add_to_cart']['ajax_add_to_cart']['time'] = $this->configFactory->get('ajax_add_to_cart.ajaxconfig')->get('time_ajax_modal');
+    $form['#attached']['drupalSettings']['ajax_add_to_cart']['ajax_add_to_cart']['time'] = $this->configFactory->get('ajax_add_to_cart.ajaxconfig')
+      ->get('time_ajax_modal');
     return $form;
   }
 
@@ -122,8 +172,10 @@ class AjaxCartHelper {
   public function ajaxAddToCartAjaxResponse($form_id, $response) {
     // Adding modal window.
     $options = [
-      'width' => $this->configFactory->get('ajax_add_to_cart.ajaxconfig')->get('ajax_modal_width'),
-      'height' => $this->configFactory->get('ajax_add_to_cart.ajaxconfig')->get('ajax_modal_height'),
+      'width' => $this->configFactory->get('ajax_add_to_cart.ajaxconfig')
+        ->get('ajax_modal_width'),
+      'height' => $this->configFactory->get('ajax_add_to_cart.ajaxconfig')
+        ->get('ajax_modal_height'),
     ];
     $title = t('Successfully Added');
     if ($_SESSION['_symfony_flashes']) {
@@ -133,7 +185,8 @@ class AjaxCartHelper {
       $response->addCommand(new OpenModalDialogCommand($title, $message, $options));
     }
     else {
-      $customblock = $this->container->get('plugin.manager.block')->createInstance('commerce_cart', []);
+      $customblock = $this->container->get('plugin.manager.block')
+        ->createInstance('commerce_cart', []);
       $render = $customblock->build();
       $response->addCommand(new OpenModalDialogCommand($title, $render, $options));
     }
@@ -141,54 +194,6 @@ class AjaxCartHelper {
     $response->addCommand(new ReloadCommand());
     unset($_SESSION['_symfony_flashes']);
     return $response;
-  }
-
-  /**
-   * Get cart block.
-   *
-   * @param object $container
-   *   Container object.
-   *
-   * @return object
-   *   Return render object.
-   */
-  private function getCartBlock($container = NULL) {
-    $blockId = $this->getCartBlockId();
-    if($blockId != FALSE) {
-      $block = Block::load($blockId);
-      $render = $container->get('entity.manager')
-        ->getViewBuilder('block')
-        ->view($block);
-    }
-    return isset($render) ? $render : NULL;
-  }
-
-  /**
-   * Gets the machine name (id) of a commerce cart block
-   * visible on the current page. Returns only the first cart found
-   *
-   * @param none
-   *
-   * @return mixed or FALSE
-   *   Return id of the first commerce cart block found on current page.
-   * 	Returns FALSE if no commerce cart block is visible.
-   */
-  private function getCartBlockId() {
-    $blockRepo = \Drupal::service('block.repository');
-    //Returns an array of regions each with an array of blocks
-    $regions = $blockRepo->getVisibleBlocksPerRegion();
-    //Iterate all visible blocks and regions
-    foreach($regions as $region) {
-      foreach($region as $block) {
-        $idPlugin = $block->get('plugin');
-        //check if this is a commerce cart block
-        if($idPlugin == 'commerce_cart') {
-          $cartBlockId = $block->get('id');
-          return($cartBlockId);
-        }
-      }
-    }
-    return FALSE;
   }
 
 }

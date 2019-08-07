@@ -2,12 +2,12 @@
 
 namespace Drupal\ajax_add_to_cart\Form;
 
+use Drupal\Core\Config\ConfigFactory;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Path\PathValidator;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class AjaxConfigForm.
@@ -22,6 +22,7 @@ class AjaxConfigForm extends ConfigFormBase {
    * @var \Drupal\Core\Config\ConfigFactory
    */
   protected $configFactory;
+
   /**
    * Drupal\Core\Path\PathValidator definition.
    *
@@ -35,7 +36,7 @@ class AjaxConfigForm extends ConfigFormBase {
   public function __construct(
     ConfigFactory $config_factory,
     PathValidator $path_validator
-    ) {
+  ) {
     parent::__construct($config_factory);
     $this->configFactory = $config_factory;
     $this->pathValidator = $path_validator;
@@ -49,15 +50,6 @@ class AjaxConfigForm extends ConfigFormBase {
       $container->get('config.factory'),
       $container->get('path.validator')
     );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function getEditableConfigNames() {
-    return [
-      'ajax_add_to_cart.ajaxconfig',
-    ];
   }
 
   /**
@@ -84,18 +76,18 @@ class AjaxConfigForm extends ConfigFormBase {
       '#description' => $this->t('Enter time in miliseconds like: 2000 stands for 2 seconds'),
     ];
     $form['ajax_modal_settings']['ajax_modal_width'] = [
-      '#type'          => 'textfield',
-      '#title'         => $this->t('Please choose width of modal window.'),
+      '#type' => 'textfield',
+      '#title' => $this->t('Please choose width of modal window.'),
       '#default_value' => $config->get('ajax_modal_width'),
-      '#size'          => self::AJAX_MODAL_INPUT_SIZE,
-      '#field_suffix'  => ' px',
+      '#size' => self::AJAX_MODAL_INPUT_SIZE,
+      '#field_suffix' => ' px',
     ];
     $form['ajax_modal_settings']['ajax_modal_height'] = [
-      '#type'          => 'textfield',
-      '#title'         => $this->t('Please choose height of modal window.'),
+      '#type' => 'textfield',
+      '#title' => $this->t('Please choose height of modal window.'),
       '#default_value' => $config->get('ajax_modal_height'),
-      '#size'          => self::AJAX_MODAL_INPUT_SIZE,
-      '#field_suffix'  => ' px',
+      '#size' => self::AJAX_MODAL_INPUT_SIZE,
+      '#field_suffix' => ' px',
     ];
     return parent::buildForm($form, $form_state);
   }
@@ -111,6 +103,15 @@ class AjaxConfigForm extends ConfigFormBase {
       ->set('ajax_modal_width', $form_state->getValue('ajax_modal_width'))
       ->set('ajax_modal_height', $form_state->getValue('ajax_modal_height'))
       ->save();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEditableConfigNames() {
+    return [
+      'ajax_add_to_cart.ajaxconfig',
+    ];
   }
 
 }

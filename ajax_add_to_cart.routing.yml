@@ -1,4 +1,3 @@
-
 ajax_add_to_cart.ajax_config_form:
   path: '/admin/commerce/config/orders/ajaxconfig'
   defaults:

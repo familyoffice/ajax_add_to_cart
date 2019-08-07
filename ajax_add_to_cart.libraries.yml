@@ -3,4 +3,4 @@ ajax_add_to_cart.commands:
   js:
     js/commands.js: {}
   dependencies:
-     - core/drupal.ajax
+    - core/drupal.ajax
