@@ -136,8 +136,6 @@ class AjaxCartHelper {
     $messages = [
       $form_id => t('Adding to cart ...'),
     ];
-    $form['#prefix'] = '<div id="modal_ajax_form_' . $form_id . '">';
-    $form['#suffix'] = '</div>';
     $form['status_messages_' . $form_id] = [
       '#type' => 'status_messages',
       '#weight' => -10,

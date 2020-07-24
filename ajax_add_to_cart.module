@@ -47,7 +47,7 @@ function ajax_add_to_cart_ajax_validate(&$form, $form_state) {
   $form_id = $form_state->getUserInput()['form_id'];
   if ($form_state->hasAnyErrors()) {
     // If form is having errors, rebuild form.
-    $response->addCommand(new ReplaceCommand('#modal_ajax_form_' . $form_id, $form));
+    $response->addCommand(new ReplaceCommand('#commerce-product-' . $form_id, $form));
   }
   else {
     // Using getInstanace method to create Object.
