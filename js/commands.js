@@ -3,8 +3,8 @@
   Drupal.AjaxCommands.prototype.reload = function (ajax, response, status) {
     setTimeout(
       function () {
-        $("#drupal-modal .cart-block--link__expand").click();
-      }, 0);
+        $('.cart-block--contents').show();
+      }, 1);
     setTimeout(
       function () {
         $(".ui-dialog .ui-button").click();
