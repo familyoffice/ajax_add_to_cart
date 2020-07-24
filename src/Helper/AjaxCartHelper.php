@@ -44,12 +44,20 @@ class AjaxCartHelper {
   protected $configFactory;
 
   /**
+   * The Drupal messenger.
+   *
+   * @var \Drupal\Core\Messenger\Messenger
+   */
+  protected $messenger;
+
+  /**
    * Private constructor to avoid instantiation.
    */
   private function __construct() {
     $this->container = Drupal::getContainer();
     $this->cartBlock = $this->getCartBlock($this->container);
     $this->configFactory = $this->container->get('config.factory');
+    $this->messenger = $this->container->get('messenger');
   }
 
   /**
@@ -178,9 +186,12 @@ class AjaxCartHelper {
         ->get('ajax_modal_height'),
     ];
     $title = t('Successfully Added');
-    if ($_SESSION['_symfony_flashes']) {
-      $message = $_SESSION['_symfony_flashes']['status'][0]->__toString();
-    }
+    $message = [
+      '#theme' => 'status_messages',
+      '#message_list' => [
+        'status' => $this->messenger->deleteByType('status'),
+      ],
+    ];
     if (!empty($this->cartBlock)) {
       $response->addCommand(new OpenModalDialogCommand($title, $message, $options));
     }
@@ -192,7 +203,6 @@ class AjaxCartHelper {
     }
     $response->addCommand(new ReplaceCommand('.block-commerce-cart', $this->cartBlock));
     $response->addCommand(new ReloadCommand());
-    unset($_SESSION['_symfony_flashes']);
     return $response;
   }
 
