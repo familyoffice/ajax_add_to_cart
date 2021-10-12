@@ -73,7 +73,7 @@ class AjaxCartHelper {
     $blockId = $this->getCartBlockId();
     if ($blockId != FALSE) {
       $block = Block::load($blockId);
-      $render = $container->get('entity.manager')
+      $render = $container->get('entity_type.manager')
         ->getViewBuilder('block')
         ->view($block);
     }
